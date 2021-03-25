@@ -2,7 +2,7 @@ from typing import Generator
 
 import boto3
 
-from aws_resource import AWSResource
+from resources.aws_resource import AWSResource
 
 
 class GlueTable(AWSResource):

@@ -4,16 +4,16 @@ from typing import Dict
 
 from neo4j import GraphDatabase
 
-from dynamodb_table import retrieve_dynamodb_tables
-from glue_catalog import retrieve_glue_catalog
-from glue_database import retrieve_glue_databases
-from glue_table import retrieve_glue_tables
-from iam_role import retrieve_iam_roles
-from kms_key import retrieve_kms_keys
-from lmbda import retrieve_lambda_functions
-from s3_bucket import retrieve_s3_buckets
-from sns_topic import retrieve_sns_topics
-from sqs_queue import retrieve_sqs_queues
+from resources.dynamodb_table import retrieve_dynamodb_tables
+from resources.glue_catalog import retrieve_glue_catalog
+from resources.glue_database import retrieve_glue_databases
+from resources.glue_table import retrieve_glue_tables
+from resources.iam_role import retrieve_iam_roles
+from resources.kms_key import retrieve_kms_keys
+from resources.lmbda import retrieve_lambda_functions
+from resources.s3_bucket import retrieve_s3_buckets
+from resources.sns_topic import retrieve_sns_topics
+from resources.sqs_queue import retrieve_sqs_queues
 
 
 parser = argparse.ArgumentParser(

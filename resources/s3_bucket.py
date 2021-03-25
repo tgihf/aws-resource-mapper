@@ -4,7 +4,7 @@ from typing import Generator, List
 import botocore
 import boto3
 
-from aws_resource import AWSResource
+from resources.aws_resource import AWSResource
 
 
 class S3Bucket(AWSResource):
