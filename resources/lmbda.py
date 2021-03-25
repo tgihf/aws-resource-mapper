@@ -33,8 +33,8 @@ class LambdaFunction(AWSResource):
         for trigger in self.triggers:
             source_arns, resource_type, extra = AWSResource.extract_base_arns(trigger["EventSourceArn"], aws_resources)
             for source_arn in source_arns:
-                if not AWSResource.is_existing_resource(source_arn, resource_type, aws_resources):
-                    print(f"[!] Flagging non-existing resource: {source_arn}, {resource_type}, {extra}")
+                # if not AWSResource.is_existing_resource(source_arn, resource_type, aws_resources):
+                #     print(f"[!] Flagging non-existing resource: {source_arn}, {resource_type}, {extra}")
                 AWSResource.create_neo4j_relationship(tx, source_arn, resource_type, "TRIGGERS", self.arn, self.aws_resource_type)
 
         # Connect Lambda to accessible resources

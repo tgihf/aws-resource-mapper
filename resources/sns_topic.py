@@ -16,8 +16,8 @@ class SNSTopic(AWSResource):
         for subscription in self.subscriptions:
             resource_arns, resource_type, extra = AWSResource.extract_base_arns(subscription["Endpoint"], aws_resources)
             for resource_arn in resource_arns:
-                if not AWSResource.is_existing_resource(resource_arn, resource_type, aws_resources):
-                    print(f"[!] Flagging non-existing resource: {resource_arn}, {resource_type}, {extra}")
+                # if not AWSResource.is_existing_resource(resource_arn, resource_type, aws_resources):
+                #     print(f"[!] Flagging non-existing resource: {resource_arn}, {resource_type}, {extra}")
                 AWSResource.create_neo4j_relationship(tx, self.arn, self.aws_resource_type, "sns:notifies", resource_arn, resource_type, extra)
 
 

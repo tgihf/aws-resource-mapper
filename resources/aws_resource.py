@@ -27,11 +27,6 @@ class AWSResource:
         pass
 
     def create_neo4j_relationship(tx, source_arn: str, source_resource_type: str, relationship: str, dst_arn: str, dst_resource_type: str, extra: str = None) -> None:
-        print(f"[*] source resource: {source_arn}")
-        print(f"[*] source_resource_type: {source_resource_type}")
-        print(f"[*] relationship: {relationship}")
-        print(f"[*] dst resource: {dst_arn}")
-        print(f"[*] dst_resource_type: {dst_resource_type}")
         source_resource_type: str = source_resource_type.replace("-", "_")
         relationship: str = relationship.replace(":", "_").replace("-", "_").replace("*", "_WILDCARD_").upper()
         dst_resource_type: str = dst_resource_type.replace("-", "_")
