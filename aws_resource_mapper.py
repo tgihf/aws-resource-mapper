@@ -1,8 +1,11 @@
 import argparse
+import getpass
 import itertools
 from typing import Dict
+import sys
 
 from neo4j import GraphDatabase
+from neo4j.exceptions import AuthError
 
 from resources.dynamodb_table import retrieve_dynamodb_tables
 from resources.glue_catalog import retrieve_glue_catalog
@@ -21,14 +24,21 @@ parser = argparse.ArgumentParser(
 )
 parser.add_argument("--url", metavar="url", type=str, help="URL of Neo4j Database to map AWS resources in", default="bolt://localhost:7687")
 parser.add_argument("--user", metavar="user", type=str, help="Neo4j user to map AWS resources as", default="neo4j")
-parser.add_argument("--password", metavar="password", type=str, help="Password of Neo4j user to map AWS resources as", default="neo4j")
 args = parser.parse_args()
+password: str = getpass.getpass(f"[*] Password of Neo4j user {args.user} to map AWS resources as: ")
 
-driver = GraphDatabase.driver(
-    args.url,
-    auth=(args.user, args.password)
-)
+print("[*] Attempting to authenticate to Neo4j...")
+try:
+    driver = GraphDatabase.driver(
+        args.url,
+        auth=(args.user, password)
+    )
+except AuthError:
+    print(f"[!] Neo4j credentials ({args.user}, {password}) are invalid! Exiting...")
+    sys.exit(1)
+print("[*] Authentication to Neo4j successful!")
 
+print("[*] Attempting to gathering resource information from AWS using boto3 credentials...")
 aws_resource_generator = itertools.chain(
     retrieve_dynamodb_tables(),
     retrieve_glue_catalog(),
@@ -55,7 +65,9 @@ aws_resources: Dict[str, Dict[str, dict]] = {
 }
 for aws_resource in aws_resource_generator:
     aws_resources[aws_resource.aws_resource_type][aws_resource.arn] = aws_resource
+print("[*] AWS resource collection complete")
 
+print("[*] Attempting to ingest AWS resources into Neo4j...")
 with driver.session() as session:
     for aws_resource_category in aws_resources:
         for resource_arn in aws_resources[aws_resource_category]:
@@ -67,3 +79,4 @@ with driver.session() as session:
             session.write_transaction(aws_resources[aws_resource_category][resource_arn].create_neo4j_relationships, aws_resources)
 
 driver.close()
+print("[*] Neo4j ingestion complete!")

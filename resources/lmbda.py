@@ -47,8 +47,8 @@ class LambdaFunction(AWSResource):
                     resource_arns, resource_type, extra = AWSResource.extract_base_arns(resource, aws_resources)
                     for resource_arn in resource_arns:
                         for action in actions:
-                            if not AWSResource.is_existing_resource(resource_arn, resource_type, aws_resources):
-                                print(f"[!] Flagging non-existing resource: {resource_arn}, {resource_type}, {extra}")
+                            # if not AWSResource.is_existing_resource(resource_arn, resource_type, aws_resources):
+                                # print(f"[!] Flagging non-existing resource: {resource_arn}, {resource_type}, {extra}")
                             AWSResource.create_neo4j_relationship(tx, self.arn, self.aws_resource_type, action, resource_arn, resource_type, extra)
 
 
