@@ -35,6 +35,31 @@ You'll be prompted for the `Neo4j` password.
 
 `aws-resource-mapper` leverages `boto3` to interact with AWS and as a result leverages `boto3`'s [credential functionality](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/credentials.html) for AWS authentication.
 
+## Example
+
+### Run the script and enter in your `Neo4j` credentials to collect your AWS resource data and ingest it into Neo4j
+
+```bash
+(venv) $ python3 aws_resource_mapper.py --url bolt://localhost:7687 --user neo4j
+[*] Password of Neo4j user neo4j to map AWS resources as: [ENTER NEO4J PASSWORD]
+[*] Attempting to authenticate to Neo4j...
+[*] Authentication to Neo4j successful!
+[*] Attempting to gather resource information from AWS using boto3 credentials...
+[*] AWS resource collection complete
+[*] Attempting to ingest AWS resources into Neo4j...
+[*] Neo4j ingestion complete!
+```
+
+### Navigate to Neo4j browser and login with your Neo4j credentials
+
+![Neo4j Login Page](images/neo4j-login.png)
+
+![Neo4j Browser](images/neo4j-browser.png)
+
+### Query Away!
+
+![Example Neo4j Query](images/neo4j-query.png)
+
 ## Required AWS Permissions
 
 The following AWS permissions are required for proper collection. Ensure the credentials you use for `boto3` map to a role with these permissions.
