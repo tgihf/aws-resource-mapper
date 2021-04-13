@@ -4,6 +4,8 @@ import itertools
 from typing import Dict
 import sys
 
+import boto3
+from botocore.exceptions import NoCredentialsError
 from neo4j import GraphDatabase
 from neo4j.exceptions import AuthError
 
@@ -23,22 +25,29 @@ parser = argparse.ArgumentParser(
     description="Map AWS resources in a Neo4j Graph Database"
 )
 parser.add_argument("--url", metavar="url", type=str, help="URL of Neo4j Database to map AWS resources in", default="bolt://localhost:7687")
-parser.add_argument("--user", metavar="user", type=str, help="Neo4j user to map AWS resources as", default="neo4j")
+parser.add_argument("--user", metavar="neo4j_user", type=str, help="Neo4j user to map AWS resources as", default="neo4j")
 args = parser.parse_args()
-password: str = getpass.getpass(f"[*] Password of Neo4j user {args.user} to map AWS resources as: ")
+password: str = getpass.getpass(f"[*] Password of Neo4j user {args.neo4j_user} to map AWS resources as: ")
 
 print("[*] Attempting to authenticate to Neo4j...")
 try:
     driver = GraphDatabase.driver(
         args.url,
-        auth=(args.user, password)
+        auth=(args.neo4j_user, password)
     )
 except AuthError:
-    print(f"[!] Neo4j credentials ({args.user}, {password}) are invalid! Exiting...")
+    print(f"[!] Neo4j credentials ({args.neo4j_user}, {password}) are invalid! Exiting...")
     sys.exit(1)
 print("[*] Authentication to Neo4j successful!")
 
-print("[*] Attempting to gathering resource information from AWS using boto3 credentials...")
+sts = boto3.client("sts")
+try:
+    sts.get_caller_identity()
+except NoCredentialsError:
+    print("[!] Unable to locate AWS credentials. Exiting...")
+    sys.exit(1)
+
+print("[*] Attempting to gather resource information from AWS using boto3 credentials...")
 aws_resource_generator = itertools.chain(
     retrieve_dynamodb_tables(),
     retrieve_glue_catalog(),
