@@ -73,8 +73,11 @@ Glue:GetDatabases
 Glue:GetTables
 
 # IAM
+IAM:ListAttachedRolePolicies
 IAM:ListRoles
 IAM:ListRolePolicies
+IAM:GetPolicy
+IAM:GetPolicyVersion
 IAM:GetRolePolicy
 
 # KMS
