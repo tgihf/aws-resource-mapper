@@ -35,7 +35,7 @@ You'll be prompted for the `Neo4j` password.
 
 `aws-resource-mapper` leverages `boto3` to interact with AWS and as a result leverages `boto3`'s [credential functionality](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/credentials.html) for AWS authentication.
 
-## AWS Permissions
+## Required AWS Permissions
 
 The following AWS permissions are required for proper collection. Ensure the credentials you use for `boto3` map to a role with these permissions.
 
@@ -73,4 +73,30 @@ SQS:GetQueueAttributes
 
 # STS
 STS:GetCallerIdentity
+```
+
+## Useful Cypher Queries
+
+The following Cypher queries may be helpful in finding useful relationships among your AWS resources once they've been ingested into your `Neo4j` database. They can be used in the web interface of your `Neo4j` server.
+
+### Find the Shortest Path Between Two Resources
+
+```cypher
+MATCH
+  (start:Lambda {name: 'public-facing-api'}),
+  (end:S3Bucket {name: 'critical-data-bucket'}),
+  p = shortestPath((start)-[*..15]-(end))
+RETURN p
+```
+
+* Maximum relationship length is 15 in this example, can be changed
+
+## Find All Shortest Paths Between Two Resources
+
+```cypher
+MATCH
+  (start:Lambda {name: 'auth-api'} ),
+  (end:DynamoDB {name: 'critical-data-db'}),
+  p = allShortestPaths((start)-[*]-(end))
+RETURN p
 ```
