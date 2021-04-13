@@ -70,6 +70,8 @@ def retrieve_lambda_functions() -> Generator[LambdaFunction, None, None]:
             # Save function policies
             function["Policies"]: Dict[dict] = {}
             role_name: str = function["Role"].split("/")[-1]
+
+            # Inline role policies
             response = iam.list_role_policies(RoleName=role_name)
             policy_names: List[str] = response["PolicyNames"]
             for policy_name in policy_names:
@@ -78,5 +80,20 @@ def retrieve_lambda_functions() -> Generator[LambdaFunction, None, None]:
                     PolicyName=policy_name
                 )
                 function["Policies"][policy_name] = response["PolicyDocument"]["Statement"]
+
+            # Managed role policies
+            response = iam.list_attached_role_policies(
+                RoleName=role_name,
+            )
+            if "AttachedPolicies" in response:
+                for policy in response["AttachedPolicies"]:
+                    policy = iam.get_policy(PolicyArn=policy["PolicyArn"])
+                    if isinstance(policy, dict) and "Policy" in policy and "Arn" in policy["Policy"] and "DefaultVersionId" in policy["Policy"]:
+                        policy_version = iam.get_policy_version(
+                            PolicyArn=policy["Policy"]["Arn"],
+                            VersionId=policy["Policy"]["DefaultVersionId"]
+                        )
+                        if isinstance(policy_version, dict) and "PolicyVersion" in policy_version and "Document" in policy_version["PolicyVersion"] and "Statement" in policy_version["PolicyVersion"]["Document"]:
+                            function["Policies"][policy["Policy"]["PolicyName"]] = policy_version["PolicyVersion"]["Document"]["Statement"]
 
             yield LambdaFunction(function)
