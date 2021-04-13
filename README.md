@@ -119,7 +119,7 @@ RETURN p
 
 * Maximum relationship length is 15 in this example, can be changed
 
-## Find All Shortest Paths Between Two Resources
+### Find All Shortest Paths Between Two Resources
 
 ```cypher
 MATCH
